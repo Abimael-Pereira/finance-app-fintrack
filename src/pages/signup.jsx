@@ -10,7 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const SignupPage = () => {
   return (
@@ -27,6 +29,21 @@ const SignupPage = () => {
           <Input placeholder="Digite seu email" />
           <PasswordInput />
           <PasswordInput placeholder="Confirme sua senha" />
+
+          <div className="flex items-start gap-3">
+            <Checkbox id="terms" defaultChecked />
+            <div className="grid gap-2">
+              <Label
+                htmlFor="terms"
+                className="text-xs text-muted-foreground opacity-75"
+              >
+                Ao clicar em “Criar conta”, você aceita{' '}
+                <a href="#" className="text-white underline">
+                  nosso termo de uso e política de privacidade
+                </a>
+              </Label>
+            </div>
+          </div>
         </CardContent>
 
         <CardFooter>
