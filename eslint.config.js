@@ -33,11 +33,12 @@ export default [
       ...reactHooks.configs.recommended.rules,
       'react/jsx-no-target-blank': 'off',
       'react-refresh/only-export-components': [
-        'warn',
+        'off',
         { allowConstantExport: true },
       ],
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
+      'react/prop-types': 'off',
     },
   },
   eslintConfigPrettier,
