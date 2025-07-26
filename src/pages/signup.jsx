@@ -83,7 +83,7 @@ const SignupPage = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const accessToken = localStorage.getItem('accesToken');
+        const accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
 
         if (!accessToken || !refreshToken) {
@@ -112,7 +112,7 @@ const SignupPage = () => {
         const accessToken = createdUser.tokens.accessToken;
         const refreshToken = createdUser.tokens.refreshToken;
         setUser(createdUser);
-        localStorage.setItem('accesToken', accessToken);
+        localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
         toast.success('Conta criada com sucesso!');
       },
