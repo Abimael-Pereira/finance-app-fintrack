@@ -12,14 +12,31 @@ export const AuthContext = createContext({
 
 export const useAuthContext = () => useContext(AuthContext);
 
+const LOCAL_STORAGE_ACCESS_TOKEN_KEY = 'accessToken';
+const LOCAL_STORAGE_REFRESH_TOKEN_KEY = 'refreshToken';
+
+const setTokens = (token) => {
+  localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN_KEY, token.accessToken);
+  localStorage.setItem(LOCAL_STORAGE_REFRESH_TOKEN_KEY, token.refreshToken);
+};
+
+const removeTokens = () => {
+  localStorage.removeItem(LOCAL_STORAGE_ACCESS_TOKEN_KEY);
+  localStorage.removeItem(LOCAL_STORAGE_REFRESH_TOKEN_KEY);
+};
+
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     const init = async () => {
       try {
-        const accessToken = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
+        const accessToken = localStorage.getItem(
+          LOCAL_STORAGE_ACCESS_TOKEN_KEY
+        );
+        const refreshToken = localStorage.getItem(
+          LOCAL_STORAGE_REFRESH_TOKEN_KEY
+        );
 
         if (!accessToken || !refreshToken) {
           return;
@@ -32,9 +49,8 @@ export const AuthContextProvider = ({ children }) => {
         });
         setUser(response.data);
       } catch (error) {
+        removeTokens();
         console.error('Erro ao verificar tokens:', error);
-        localStorage.removeItem('accesToken');
-        localStorage.removeItem('refreshToken');
       }
     };
 
@@ -54,11 +70,8 @@ export const AuthContextProvider = ({ children }) => {
       return response.data;
     },
     onSuccess: (createdUser) => {
-      const accessToken = createdUser.tokens.accessToken;
-      const refreshToken = createdUser.tokens.refreshToken;
       setUser(createdUser);
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      setTokens(createdUser.tokens);
       toast.success('Conta criada com sucesso!');
     },
     onError: () => {
@@ -78,9 +91,8 @@ export const AuthContextProvider = ({ children }) => {
     },
     onSuccess: (data) => {
       setUser(data);
+      setTokens(data.tokens);
       toast.success('Login realizado com sucesso.');
-      localStorage.setItem('accessToken', data.tokens.accessToken);
-      localStorage.setItem('refreshToken', data.tokens.refreshToken);
     },
     onError: () => {
       toast.error('Erro ao acessar a conta, tente novamente.');
