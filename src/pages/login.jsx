@@ -1,9 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import PasswordInput from '@/components/password-input';
@@ -26,7 +24,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { AuthContext } from '@/context/auth';
-import { api } from '@/lib/axios';
 
 const loginSchema = z.object({
   email: z.string().trim().email('Email é inválido'),
@@ -34,9 +31,7 @@ const loginSchema = z.object({
 });
 
 const LoginPage = () => {
-  const { user: userTest } = useContext(AuthContext);
-
-  const [user, setUser] = useState(null);
+  const { user, login } = useContext(AuthContext);
 
   const { setError, ...form } = useForm({
     resolver: zodResolver(loginSchema),
@@ -46,60 +41,19 @@ const LoginPage = () => {
     },
   });
 
-  useEffect(() => {
-    const init = async () => {
-      try {
-        const accessToken = localStorage.getItem('accessToken');
-        const refreshToken = localStorage.getItem('refreshToken');
-
-        if (!accessToken || !refreshToken) {
-          return;
+  const handleSubmit = (data) => {
+    login(data, {
+      onError: (error) => {
+        if (error.status === 404) {
+          return setError('email', { message: 'E-mail não encontrado.' });
+        }
+        if (error.status === 401) {
+          return setError('password', { message: 'Senha incorreta.' });
         }
 
-        const response = await api.get('/users/me', {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        setUser(response.data);
-      } catch (error) {
         console.log(error);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refeshToken');
-      }
-    };
-
-    init();
-  }, []);
-
-  const { mutate: loginMutation } = useMutation({
-    mutationKey: ['login'],
-    mutationFn: async (variables) => {
-      const response = await api.post('auth/login', {
-        email: variables.email,
-        password: variables.password,
-      });
-
-      return response.data;
-    },
-    onSuccess: (data) => {
-      setUser(data);
-      toast.success('Login realizado com sucesso.');
-      localStorage.setItem('accessToken', data.tokens.accessToken);
-      localStorage.setItem('refreshToken', data.tokens.refreshToken);
-    },
-    onError: (error) => {
-      if (error.status === 404) {
-        return setError('email', { message: 'E-mail não encontrado.' });
-      }
-      if (error.status === 401) {
-        return setError('password', { message: 'Senha incorreta.' });
-      }
-
-      console.log(error);
-    },
-  });
-
-  const handleSubmit = (data) => {
-    loginMutation(data);
+      },
+    });
   };
 
   if (user) {
@@ -108,7 +62,6 @@ const LoginPage = () => {
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center gap-3">
-      <h1>{userTest}</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <Card className="w-[500px]">

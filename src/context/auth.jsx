@@ -39,7 +39,7 @@ export const AuthContextProvider = ({ children }) => {
     init();
   }, []);
 
-  const signupMutation = useMutation({
+  const { mutate: signup } = useMutation({
     mutationKey: ['signup'],
     mutationFn: async (variables) => {
       const response = await api.post('/users', {
@@ -51,29 +51,45 @@ export const AuthContextProvider = ({ children }) => {
 
       return response.data;
     },
+    onSuccess: (createdUser) => {
+      const accessToken = createdUser.tokens.accessToken;
+      const refreshToken = createdUser.tokens.refreshToken;
+      setUser(createdUser);
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+      toast.success('Conta criada com sucesso!');
+    },
+    onError: () => {
+      toast.error('Erro ao criar conta');
+    },
   });
 
-  const signup = (data) => {
-    signupMutation.mutate(data, {
-      onSuccess: (createdUser) => {
-        const accessToken = createdUser.tokens.accessToken;
-        const refreshToken = createdUser.tokens.refreshToken;
-        setUser(createdUser);
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        toast.success('Conta criada com sucesso!');
-      },
-      onError: () => {
-        toast.error('Erro ao criar conta');
-      },
-    });
-  };
+  const { mutate: login } = useMutation({
+    mutationKey: ['login'],
+    mutationFn: async (variables) => {
+      const response = await api.post('auth/login', {
+        email: variables.email,
+        password: variables.password,
+      });
+
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setUser(data);
+      toast.success('Login realizado com sucesso.');
+      localStorage.setItem('accessToken', data.tokens.accessToken);
+      localStorage.setItem('refreshToken', data.tokens.refreshToken);
+    },
+    onError: () => {
+      toast.error('Erro ao acessar a conta, tente novamente.');
+    },
+  });
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        login: () => {},
+        login,
         signup,
       }}
     >
