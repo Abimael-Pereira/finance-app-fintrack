@@ -8,6 +8,7 @@ export const AuthContext = createContext({
   user: null,
   login: () => {},
   signup: () => {},
+  isInitializing: true,
 });
 
 export const useAuthContext = () => useContext(AuthContext);
@@ -26,6 +27,7 @@ const removeTokens = () => {
 };
 
 export const AuthContextProvider = ({ children }) => {
+  const [isInitializing, setIsInitializing] = useState(true);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -49,8 +51,11 @@ export const AuthContextProvider = ({ children }) => {
         });
         setUser(response.data);
       } catch (error) {
+        setUser(null);
         removeTokens();
         console.error('Erro ao verificar tokens:', error);
+      } finally {
+        setIsInitializing(false);
       }
     };
 
@@ -105,6 +110,7 @@ export const AuthContextProvider = ({ children }) => {
         user,
         login,
         signup,
+        isInitializing,
       }}
     >
       {children}
