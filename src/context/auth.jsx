@@ -6,7 +6,8 @@ import {
   LOCAL_STORAGE_ACCESS_TOKEN_KEY,
   LOCAL_STORAGE_REFRESH_TOKEN_KEY,
 } from '@/constants/local-storege';
-import { protectedApi, publicApi } from '@/lib/axios';
+import { protectedApi } from '@/lib/axios';
+import { UserService } from '@/services/user';
 
 export const AuthContext = createContext({
   user: null,
@@ -62,14 +63,7 @@ export const AuthContextProvider = ({ children }) => {
   const { mutate: signup } = useMutation({
     mutationKey: ['signup'],
     mutationFn: async (variables) => {
-      const response = await publicApi.post('/users', {
-        first_name: variables.firstName,
-        last_name: variables.lastName,
-        email: variables.email,
-        password: variables.password,
-      });
-
-      return response.data;
+      return await UserService.signup(variables);
     },
     onSuccess: (createdUser) => {
       setUser(createdUser);
@@ -84,12 +78,7 @@ export const AuthContextProvider = ({ children }) => {
   const { mutate: login } = useMutation({
     mutationKey: ['login'],
     mutationFn: async (variables) => {
-      const response = await publicApi.post('auth/login', {
-        email: variables.email,
-        password: variables.password,
-      });
-
-      return response.data;
+      return await UserService.login(variables);
     },
     onSuccess: (data) => {
       setUser(data);

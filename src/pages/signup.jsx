@@ -28,8 +28,16 @@ import { useAuthContext } from '@/context/auth';
 
 const signupSchema = z
   .object({
-    firstName: z.string().trim().min(1, 'Nome é obrigatório'),
-    lastName: z.string().trim().min(1, 'Sobrenome é obrigatório'),
+    firstName: z
+      .string()
+      .trim()
+      .min(1, 'Nome é obrigatório')
+      .regex(/^[^\d]+$/, 'Nome não pode conter números'),
+    lastName: z
+      .string()
+      .trim()
+      .min(1, 'Sobrenome é obrigatório')
+      .regex(/^[^\d]+$/, 'Sobrenome não pode conter números'),
     email: z.string().trim().email('Email é inválido'),
     password: z
       .string()
@@ -51,7 +59,7 @@ const signupSchema = z
 const SignupPage = () => {
   const { user, signup, isInitializing } = useAuthContext();
 
-  const form = useForm({
+  const { setError, ...form } = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       firstName: '',
@@ -64,7 +72,13 @@ const SignupPage = () => {
   });
 
   const handleSubmit = (data) => {
-    signup(data);
+    signup(data, {
+      onError: (error) => {
+        if (error.response.status === 400) {
+          setError('email', { message: 'Email já está em uso.' });
+        }
+      },
+    });
   };
 
   if (isInitializing) return null;
