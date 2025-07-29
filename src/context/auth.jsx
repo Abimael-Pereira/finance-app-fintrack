@@ -59,8 +59,6 @@ export const AuthContextProvider = ({ children }) => {
     init();
   }, []);
 
-  console.log('AuthContextProvider user:', user);
-
   const { mutate: signup } = useMutation({
     mutationKey: ['signup'],
     mutationFn: async (variables) => {
