@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router';
 
+import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { useAuthContext } from '@/context/auth';
 
@@ -16,6 +17,7 @@ const HomePage = () => {
 
   return (
     <>
+      <Header />
       <h1>Olá, {user.first_name}</h1>
       <Button onClick={signOut}>Sair</Button>
     </>
