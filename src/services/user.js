@@ -26,8 +26,8 @@ export const UserService = {
       lastName: response.data.last_name,
       email: response.data.email,
       tokens: {
-        accessToken: response.data.access_token,
-        refreshToken: response.data.refresh_token,
+        accessToken: response.data.tokens.accessToken,
+        refreshToken: response.data.tokens.refreshToken,
       },
     };
   },
@@ -47,14 +47,16 @@ export const UserService = {
       password: input.password,
     });
 
+    console.log(response);
+
     return {
       id: response.data.id,
       firstName: response.data.first_name,
       lastName: response.data.last_name,
       email: response.data.email,
       tokens: {
-        accessToken: response.data.access_token,
-        refreshToken: response.data.refresh_token,
+        accessToken: response.data.tokens.accessToken,
+        refreshToken: response.data.tokens.refreshToken,
       },
     };
   },
