@@ -59,8 +59,6 @@ protectedApi.interceptors.response.use(
       }
     }
 
-    console.log('Passou do try');
-
     return Promise.reject(error);
   }
 );

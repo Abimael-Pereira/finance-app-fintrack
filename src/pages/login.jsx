@@ -49,8 +49,9 @@ const LoginPage = () => {
         if (error.status === 401) {
           return setError('password', { message: 'Senha incorreta.' });
         }
-
-        console.log(error);
+        setError('root', {
+          message: 'Erro ao acessar a conta, tente novamente.',
+        });
       },
     });
   };
