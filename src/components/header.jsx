@@ -24,7 +24,7 @@ const Header = () => {
           <img src={logo} alt="Logo FinTrack" />
           <div>
             <DropdownMenu>
-              <DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="space-x-1">
                   <Avatar className="h-7 w-7">
                     <AvatarImage src="https://github.com/shadcn.png" />
