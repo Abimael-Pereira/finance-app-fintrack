@@ -46,9 +46,6 @@ export const UserService = {
       email: input.email,
       password: input.password,
     });
-
-    console.log(response);
-
     return {
       id: response.data.id,
       firstName: response.data.first_name,
@@ -73,5 +70,27 @@ export const UserService = {
       lastName: response.data.last_name,
       email: response.data.email,
     };
+  },
+
+  /**
+   * Obtém o saldo do usuário com base nas transações dentro de um intervalo de datas
+   * @param {string} date - String de consulta com as datas no formato ?from=YYYY-MM-DD&to=YYYY-MM-DD
+   * @returns {Object} - Retorna um objeto com os dados do saldo do usuário
+   */
+
+  getBalance: async (date) => {
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.set('from', date.from);
+      queryParams.set('to', date.to);
+
+      const response = await protectedApi.get(
+        `/users/me/balance?${queryParams.toString()}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+      throw error;
+    }
   },
 };

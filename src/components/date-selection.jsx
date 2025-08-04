@@ -1,7 +1,10 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { addMonths } from 'date-fns';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
+
+import { useAuthContext } from '@/context/auth';
 
 import { DatePickerWithRange } from './ui/date-picker-with-range';
 
@@ -11,6 +14,9 @@ const formatDateToQueryParam = (date) => {
 
 const DateSelection = () => {
   const navigate = useNavigate();
+  const { user } = useAuthContext();
+  const queryClient = useQueryClient();
+
   const [searchParams] = useSearchParams();
 
   const [date, setDate] = useState({
@@ -34,7 +40,7 @@ const DateSelection = () => {
     if (date.from && date.to) {
       navigate(`/?${queryParams.toString()}`);
     }
-  }, [date, navigate]);
+  }, [date, navigate, queryClient, user?.id]);
 
   return <DatePickerWithRange value={date} onChange={setDate} />;
 };
