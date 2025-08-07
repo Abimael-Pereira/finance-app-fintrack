@@ -14,6 +14,9 @@ const Balance = () => {
   const [searchParams] = useSearchParams();
   const { user } = useAuthContext();
 
+  const from = searchParams.get('from');
+  const to = searchParams.get('to');
+
   const formatCurrency = (value) =>
     new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -21,15 +24,8 @@ const Balance = () => {
     }).format(Number(value));
 
   const { data } = useQuery({
-    queryKey: [
-      'balance',
-      user?.id,
-      searchParams.get('from'),
-      searchParams.get('to'),
-    ],
+    queryKey: ['balance', user?.id, from, to],
     queryFn: async () => {
-      const from = searchParams.get('from');
-      const to = searchParams.get('to');
       return await UserService.getBalance({
         from,
         to,

@@ -1,8 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { PlusIcon } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Loader2Icon, PlusIcon } from 'lucide-react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
+import { toast } from 'sonner';
 import z from 'zod';
 
 import PiggyBank from '@/assets/images/piggy-bank.svg';
@@ -17,6 +20,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useAuthContext } from '@/context/auth';
+import { TransactionService } from '@/services/transaction';
 
 import { Button } from './ui/button';
 import DatePicker from './ui/date-picker';
@@ -46,6 +51,17 @@ const formSchema = z.object({
 });
 
 const AddTransactionButton = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuthContext();
+  const { mutateAsync: createTransaction } = useMutation({
+    mutationKey: ['create-transaction'],
+    mutationFn: (data) => TransactionService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['balance', user?.id] });
+    },
+  });
+
+  const [dialogOpen, setDialogOpen] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,13 +73,18 @@ const AddTransactionButton = () => {
     shouldUnregister: true,
   });
 
-  const onSubmit = (data) => {
-    console.log('Form data submitted:', data);
-    // Aqui você pode adicionar a lógica para enviar os dados da transação
-    form.reset();
+  const onSubmit = async (data) => {
+    try {
+      await createTransaction(data);
+      setDialogOpen(false);
+      toast.success('Transação adicionada com sucesso!');
+      form.reset();
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+    }
   };
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <Button>
           {' '}
@@ -112,11 +133,11 @@ const AddTransactionButton = () => {
                       fixedDecimalScale={true}
                       allowNegative={false}
                       customInput={Input}
+                      {...field}
                       onChange={() => {}}
                       onValueChange={(values) => {
                         field.onChange(values.floatValue);
                       }}
-                      {...field}
                     />
                   </FormControl>
                   <FormDescription />
@@ -190,11 +211,24 @@ const AddTransactionButton = () => {
 
             <DialogFooter className="sm:space-x-4">
               <DialogClose asChild>
-                <Button className="w-full" type="reset" variant="secondary">
+                <Button
+                  className="w-full"
+                  type="reset"
+                  variant="secondary"
+                  disabled={form.formState.isSubmitting}
+                  onClick={() => form.reset()}
+                >
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button className="w-full" type="submit">
+              <Button
+                className="w-full"
+                type="submit"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting && (
+                  <Loader2Icon className="animate-spin" />
+                )}
                 Adicionar
               </Button>
             </DialogFooter>
