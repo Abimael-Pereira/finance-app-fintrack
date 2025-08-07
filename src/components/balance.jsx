@@ -14,8 +14,8 @@ const Balance = () => {
   const [searchParams] = useSearchParams();
   const { user } = useAuthContext();
 
-  const from = searchParams.get('from');
-  const to = searchParams.get('to');
+  const from = searchParams.get('from'); //YYYY-MM-DD
+  const to = searchParams.get('to'); //YYYY-MM-DD
 
   const formatCurrency = (value) =>
     new Intl.NumberFormat('pt-BR', {
