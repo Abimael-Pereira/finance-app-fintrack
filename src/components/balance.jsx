@@ -31,6 +31,8 @@ const Balance = () => {
         to,
       });
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    enabled: Boolean(from) && Boolean(to) && Boolean(user?.id),
   });
 
   return (
