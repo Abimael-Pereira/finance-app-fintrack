@@ -1,7 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { Link, Navigate } from 'react-router';
-import { z } from 'zod';
 
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
@@ -23,25 +20,15 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useAuthContext } from '@/context/auth';
-
-const loginSchema = z.object({
-  email: z.string().trim().email('Email é inválido'),
-  password: z.string().trim().min(6, 'Senha deve ter pelo menos 6 caracteres'),
-});
+import { useLoginForm } from '@/forms/hooks/user';
 
 const LoginPage = () => {
   const { user, login, isInitializing } = useAuthContext();
 
-  const { setError, ...form } = useForm({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
+  const { setError, ...form } = useLoginForm();
 
-  const handleSubmit = (data) => {
-    login(data, {
+  const handleSubmit = async (data) => {
+    await login(data, {
       onError: (error) => {
         if (error.status === 404) {
           return setError('email', { message: 'E-mail não encontrado.' });
@@ -105,7 +92,9 @@ const LoginPage = () => {
             </CardContent>
 
             <CardFooter>
-              <Button className="w-full">Fazer login</Button>
+              <Button className="w-full" disabled={form.formState.isSubmitting}>
+                Fazer login
+              </Button>
             </CardFooter>
           </Card>
         </form>
