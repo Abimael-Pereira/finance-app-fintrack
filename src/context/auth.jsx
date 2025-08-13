@@ -1,7 +1,7 @@
-import { useMutation } from '@tanstack/react-query';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+import { useLogin, useSignup } from '@/api/hooks/user';
 import { UserService } from '@/api/services/user';
 import {
   LOCAL_STORAGE_ACCESS_TOKEN_KEY,
@@ -59,35 +59,33 @@ export const AuthContextProvider = ({ children }) => {
     init();
   }, []);
 
-  const { mutate: signup } = useMutation({
-    mutationKey: ['signup'],
-    mutationFn: async (variables) => {
-      return await UserService.signup(variables);
-    },
-    onSuccess: (createdUser) => {
+  const signupMutation = useSignup();
+
+  const loginMutation = useLogin();
+
+  const signup = async (data) => {
+    try {
+      const createdUser = await signupMutation.mutateAsync(data);
       setUser(createdUser);
       setTokens(createdUser.tokens);
       toast.success('Conta criada com sucesso!');
-    },
-    onError: () => {
+    } catch (error) {
       toast.error('Erro ao criar conta');
-    },
-  });
+      console.error('Erro ao criar conta:', error);
+    }
+  };
 
-  const { mutate: login } = useMutation({
-    mutationKey: ['login'],
-    mutationFn: async (variables) => {
-      return await UserService.login(variables);
-    },
-    onSuccess: (data) => {
-      setUser(data);
-      setTokens(data.tokens);
+  const login = async (data) => {
+    try {
+      const loggedUser = await loginMutation.mutateAsync(data);
+      setUser(loggedUser);
+      setTokens(loggedUser.tokens);
       toast.success('Login realizado com sucesso.');
-    },
-    onError: () => {
+    } catch (error) {
       toast.error('Erro ao acessar a conta, tente novamente.');
-    },
-  });
+      console.error('Erro ao acessar a conta:', error);
+    }
+  };
 
   const signOut = () => {
     setUser(null);
