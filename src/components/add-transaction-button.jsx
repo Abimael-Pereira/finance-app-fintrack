@@ -1,13 +1,9 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { Loader2Icon, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { NumericFormat } from 'react-number-format';
 import { toast } from 'sonner';
-import z from 'zod';
 
-import { useCreateTransaction } from '@/api/hooks/transaction';
 import PiggyBank from '@/assets/images/piggy-bank.svg';
 import TrendingDown from '@/assets/images/trending-down.svg';
 import TrendingUp from '@/assets/images/trending-up.svg';
@@ -20,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useCreateTransactionForm } from '@/forms/hooks/transaction';
 
 import { Button } from './ui/button';
 import DatePicker from './ui/date-picker';
@@ -34,45 +31,20 @@ import {
 } from './ui/form';
 import { Input } from './ui/input';
 
-const formSchema = z.object({
-  name: z
-    .string({ message: 'Nome é obrigatório.' })
-    .trim()
-    .min(1, 'Nome é obrigatório.'),
-  date: z.date({ message: 'Data é obrigatória.' }),
-  amount: z
-    .number({ message: 'Valor deve ser maior que zero.' })
-    .min(0.01, 'Valor deve ser maior que zero.'),
-  type: z.enum(['EARNING', 'EXPENSE', 'INVESTMENT'], {
-    errorMap: () => ({ message: 'Tipo de transação é obrigatório' }),
-  }),
-});
-
 const AddTransactionButton = () => {
-  const { mutateAsync: createTransaction } = useCreateTransaction();
-
   const [dialogOpen, setDialogOpen] = useState(false);
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      date: new Date(),
-      amount: 1,
-      type: 'EARNING',
-    },
-    shouldUnregister: true,
-  });
 
-  const onSubmit = async (data) => {
-    try {
-      await createTransaction(data);
+  const { onSubmit, form } = useCreateTransactionForm({
+    onSuccess: () => {
       setDialogOpen(false);
       toast.success('Transação adicionada com sucesso!');
       form.reset();
-    } catch (error) {
-      console.error('Error creating transaction:', error);
-    }
-  };
+    },
+    onError: () => {
+      toast.error('Erro ao adicionar transação');
+    },
+  });
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
