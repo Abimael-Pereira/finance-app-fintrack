@@ -8,6 +8,8 @@ import { NumericFormat } from 'react-number-format';
 import { toast } from 'sonner';
 import z from 'zod';
 
+import { getUserBalanceQueryKey } from '@/api/hooks/user';
+import { TransactionService } from '@/api/services/transaction';
 import PiggyBank from '@/assets/images/piggy-bank.svg';
 import TrendingDown from '@/assets/images/trending-down.svg';
 import TrendingUp from '@/assets/images/trending-up.svg';
@@ -21,7 +23,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useAuthContext } from '@/context/auth';
-import { TransactionService } from '@/services/transaction';
 
 import { Button } from './ui/button';
 import DatePicker from './ui/date-picker';
@@ -57,7 +58,9 @@ const AddTransactionButton = () => {
     mutationKey: ['create-transaction'],
     mutationFn: (data) => TransactionService.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['balance', user?.id] });
+      queryClient.invalidateQueries({
+        queryKey: getUserBalanceQueryKey({ userId: user?.id }),
+      });
     },
   });
 

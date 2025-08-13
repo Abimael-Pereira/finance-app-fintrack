@@ -58,12 +58,15 @@ const DateSelection = () => {
     if (date.from && date.to) {
       navigate(`/?${queryParams.toString()}`);
     }
-    queryClient.invalidateQueries([
-      'balance',
-      user?.id,
-      formatDateToQueryParam(date.from),
-      formatDateToQueryParam(date.to),
-    ]);
+    queryClient.invalidateQueries({
+      queryKey: [
+        'balance',
+        user?.id,
+        formatDateToQueryParam(date.from),
+        formatDateToQueryParam(date.to),
+      ],
+      exact: true,
+    });
   }, [date, navigate, queryClient, user?.id]);
 
   return <DatePickerWithRange value={date} onChange={setDate} />;

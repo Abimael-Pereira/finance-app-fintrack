@@ -1,18 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router';
 
+import { useGetUserBalance } from '@/api/hooks/user';
 import PiggyBank from '@/assets/images/piggy-bank.svg';
 import TrendingDown from '@/assets/images/trending-down.svg';
 import TrendingUp from '@/assets/images/trending-up.svg';
 import Wallet from '@/assets/images/wallet.svg';
-import { useAuthContext } from '@/context/auth';
-import { UserService } from '@/services/user';
 
 import BalanceCard from './balance-card';
 
 const Balance = () => {
   const [searchParams] = useSearchParams();
-  const { user } = useAuthContext();
 
   const from = searchParams.get('from'); //YYYY-MM-DD
   const to = searchParams.get('to'); //YYYY-MM-DD
@@ -23,17 +20,7 @@ const Balance = () => {
       currency: 'BRL',
     }).format(Number(value));
 
-  const { data } = useQuery({
-    queryKey: ['balance', user?.id, from, to],
-    queryFn: async () => {
-      return await UserService.getBalance({
-        from,
-        to,
-      });
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    enabled: Boolean(from) && Boolean(to) && Boolean(user?.id),
-  });
+  const { data } = useGetUserBalance({ from, to });
 
   return (
     <div className="grid w-full grid-cols-2 gap-6">
