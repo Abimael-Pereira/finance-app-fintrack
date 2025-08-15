@@ -19,24 +19,25 @@ export const useCreateTransaction = () => {
       queryClient.invalidateQueries({
         queryKey: getUserBalanceQueryKey({ userId: user?.id }),
       });
+      queryClient.invalidateQueries({
+        queryKey: getTransactionsQueryKey({ userId: user?.id }),
+      });
     },
   });
 };
 
 export const getTransactionsQueryKey = ({ userId, from, to }) => {
-  if (!from || !to) return ['transactions', userId];
-
-  return ['transactions', userId, from, to];
+  if (!from || !to) {
+    return ['getTransactions', userId];
+  }
+  return ['getTransactions', userId, from, to];
 };
 
 export const useGetTransactions = ({ from, to }) => {
   const { user } = useAuthContext();
   return useQuery({
-    queryKey: getTransactionsQueryKey({
-      userId: user?.id,
-      from: from,
-      to: to,
-    }),
-    queryFn: () => TransactionService.getTransactions({ from, to }),
+    queryKey: getTransactionsQueryKey({ userId: user.id, from, to }),
+    queryFn: () => TransactionService.getAll({ from, to }),
+    enabled: Boolean(from) && Boolean(to) && Boolean(user.id),
   });
 };

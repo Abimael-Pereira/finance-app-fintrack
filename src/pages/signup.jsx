@@ -29,8 +29,8 @@ const SignupPage = () => {
 
   const { setError, ...form } = useSignupForm();
 
-  const handleSubmit = (data) => {
-    signup(data, {
+  const handleSubmit = async (data) => {
+    await signup(data, {
       onError: (error) => {
         if (error.response.status === 400) {
           setError('email', { message: 'Email já está em uso.' });
@@ -161,7 +161,9 @@ const SignupPage = () => {
             </CardContent>
 
             <CardFooter>
-              <Button className="w-full">Criar conta</Button>
+              <Button className="w-full" disabled={form.formState.isSubmitting}>
+                Criar conta
+              </Button>
             </CardFooter>
           </Card>
         </form>

@@ -10,15 +10,10 @@ export const TransactionService = {
    * @param {string} input.to - Data de fim do filtro (YYYY-MM-DD).
    * @returns {Object} - Retorna um objeto com os dados da transação.
    */
-  getTransactions: async (date) => {
-    try {
-      const query = queryString.stringify({ from: date.from, to: date.to });
-      const response = await protectedApi.get(`/transactions/me?${query}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-      throw error;
-    }
+  getAll: async (input) => {
+    const query = queryString.stringify({ from: input.from, to: input.to });
+    const response = await protectedApi.get(`/transactions/me?${query}`);
+    return response.data;
   },
   /**
    * Cria uma transação para o usuário autenticado.
