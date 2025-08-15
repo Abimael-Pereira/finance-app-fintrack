@@ -1,9 +1,19 @@
+import queryString from 'query-string';
+
 import { protectedApi } from '@/lib/axios';
 
 export const TransactionService = {
+  /**
+   * Cria uma transação para o usuário autenticado.
+   * @param {Object} input
+   * @param {string} input.from - Data de início do filtro (YYYY-MM-DD).
+   * @param {string} input.to - Data de fim do filtro (YYYY-MM-DD).
+   * @returns {Object} - Retorna um objeto com os dados da transação.
+   */
   getTransactions: async (date) => {
     try {
-      const response = await protectedApi.get(`/transactions/me${date}`);
+      const query = queryString.stringify({ from: date.from, to: date.to });
+      const response = await protectedApi.get(`/transactions/me?${query}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching transactions:', error);
