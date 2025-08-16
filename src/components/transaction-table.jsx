@@ -63,7 +63,7 @@ const TransactionsTable = () => {
     <>
       <h2 className="text-2xl font-bold">Transações</h2>
 
-      <ScrollArea className="rounded-md border">
+      <ScrollArea className="h-[500px] max-h-[500px] rounded-md border">
         <DataTable columns={columns} data={transactions || []} />;
       </ScrollArea>
     </>
