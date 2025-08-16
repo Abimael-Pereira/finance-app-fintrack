@@ -5,6 +5,7 @@ import PiggyBank from '@/assets/images/piggy-bank.svg';
 import TrendingDown from '@/assets/images/trending-down.svg';
 import TrendingUp from '@/assets/images/trending-up.svg';
 import Wallet from '@/assets/images/wallet.svg';
+import { formatCurrency } from '@/helpers/currency';
 
 import BalanceCard from './balance-card';
 
@@ -13,12 +14,6 @@ const Balance = () => {
 
   const from = searchParams.get('from'); //YYYY-MM-DD
   const to = searchParams.get('to'); //YYYY-MM-DD
-
-  const formatCurrency = (value) =>
-    new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(Number(value));
 
   const { data } = useGetUserBalance({ from, to });
 
