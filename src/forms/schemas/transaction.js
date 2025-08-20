@@ -13,3 +13,7 @@ export const createTransactionFormSchema = z.object({
     errorMap: () => ({ message: 'Tipo de transação é obrigatório' }),
   }),
 });
+
+export const updateTransactionFormSchema = createTransactionFormSchema.extend({
+  id: z.string().uuid({ message: 'ID é obrigatório.' }),
+});
