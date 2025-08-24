@@ -5,6 +5,7 @@ import Balance from '@/components/balance';
 import DateSelection from '@/components/date-selection';
 import Header from '@/components/header';
 import TransactionsTable from '@/components/transaction-table';
+import TransactionTypeChart from '@/components/transaction-type-chart';
 import { useAuthContext } from '@/context/auth';
 
 const HomePage = () => {
@@ -32,7 +33,7 @@ const HomePage = () => {
 
         <div className="grid grid-cols-[2fr,1fr] gap-6">
           <Balance />
-          <div>Grafico muito foda aqui</div>
+          <TransactionTypeChart />
         </div>
 
         <TransactionsTable />
